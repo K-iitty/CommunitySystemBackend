@@ -1000,5 +1000,197 @@ operation_status VARCHAR(20) DEFAULT '成功' COMMENT '操作状态',
 );
 ```
 
+### 22. 社区公告表 (community_notice)
+```sql
 
+CREATE TABLE community_notice (
+id BIGINT PRIMARY KEY AUTO_INCREMENT,
+
+    -- 关联信息
+    community_id BIGINT NOT NULL COMMENT '所属社区ID',
+    created_by BIGINT NOT NULL COMMENT '发布人ID(关联system_admin)',
+    
+    -- 公告基本信息
+    title VARCHAR(200) NOT NULL COMMENT '公告标题',
+    content TEXT NOT NULL COMMENT '公告内容',
+    notice_type VARCHAR(50) NOT NULL COMMENT '公告类型:社区公告/活动公告/紧急通知/温馨提示',
+    
+    -- 活动信息（如果是活动公告）
+    activity_date DATE COMMENT '活动日期',
+    activity_time VARCHAR(50) COMMENT '活动时间',
+    activity_location VARCHAR(200) COMMENT '活动地点',
+    activity_organizer VARCHAR(100) COMMENT '活动组织者',
+    activity_contact VARCHAR(50) COMMENT '活动联系人',
+    activity_contact_phone VARCHAR(20) COMMENT '活动联系电话',
+    
+    -- 目标受众
+    target_audience VARCHAR(100) DEFAULT '全体业主' COMMENT '目标受众',
+    target_buildings VARCHAR(500) COMMENT '目标楼栋(JSON数组)',
+    target_owner_types VARCHAR(100) COMMENT '目标业主类型',
+    
+    -- 时间控制
+    publish_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
+    start_time TIMESTAMP NOT NULL COMMENT '生效时间',
+    end_time TIMESTAMP NOT NULL COMMENT '失效时间',
+    is_urgent TINYINT DEFAULT 0 COMMENT '是否紧急',
+    
+    -- 展示设置
+    is_top TINYINT DEFAULT 0 COMMENT '是否置顶',
+    top_end_time TIMESTAMP COMMENT '置顶结束时间',
+    read_count INT DEFAULT 0 COMMENT '阅读次数',
+    
+    -- 附件信息
+    attachments TEXT COMMENT '附件信息(JSON格式)',
+    
+    -- 状态信息
+    status VARCHAR(20) DEFAULT '已发布' COMMENT '状态:草稿/已发布/已撤回/已过期',
+    approval_status VARCHAR(20) DEFAULT '已审核' COMMENT '审核状态',
+    approved_by BIGINT COMMENT '审核人ID',
+    approved_at TIMESTAMP NULL COMMENT '审核时间',
+    
+    -- 系统信息
+    remark VARCHAR(500) COMMENT '备注',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (community_id) REFERENCES community_info(id),
+    FOREIGN KEY (created_by) REFERENCES system_admin(id),
+    FOREIGN KEY (approved_by) REFERENCES system_admin(id),
+    
+    INDEX idx_community_notice (community_id, status, publish_time),
+    INDEX idx_notice_type (notice_type),
+    INDEX idx_publish_time (publish_time),
+    INDEX idx_time_range (start_time, end_time),
+    INDEX idx_is_top (is_top)
+);
+```
+
+### 23.业主问题表 (owner_issue)
+```sql
+CREATE TABLE owner_issue (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    
+    -- 关联信息
+    community_id BIGINT NOT NULL COMMENT '所属社区ID',
+    owner_id BIGINT NOT NULL COMMENT '业主ID',
+    house_id BIGINT COMMENT '关联房屋ID',
+    
+    -- 问题基本信息
+    issue_title VARCHAR(200) NOT NULL COMMENT '问题标题',
+    issue_content TEXT NOT NULL COMMENT '问题详情描述',
+    issue_type VARCHAR(50) NOT NULL COMMENT '问题类型:报修服务/投诉建议/咨询服务/其他',
+    sub_type VARCHAR(100) COMMENT '问题子类型',
+    
+    -- 位置信息
+    location_type VARCHAR(50) COMMENT '位置类型:室内/公共区域/停车场/其他',
+    specific_location VARCHAR(200) COMMENT '具体位置',
+    
+    -- 联系信息
+    contact_name VARCHAR(50) COMMENT '联系人姓名',
+    contact_phone VARCHAR(20) NOT NULL COMMENT '联系电话',
+    best_contact_time VARCHAR(100) COMMENT '最佳联系时间',
+    
+    -- 紧急程度
+    urgency_level VARCHAR(20) DEFAULT '一般' COMMENT '紧急程度:紧急/高/一般/低',
+    expected_resolve_time TIMESTAMP COMMENT '期望解决时间',
+    
+    -- 分配信息
+    assigned_staff_id BIGINT COMMENT '指派处理人员ID',
+    assigned_department_id BIGINT COMMENT '指派部门ID',
+    assigned_time TIMESTAMP NULL COMMENT '指派时间',
+    assigned_remark VARCHAR(500) COMMENT '指派备注',
+    
+    -- 处理信息
+    processor_staff_id BIGINT COMMENT '实际处理人员ID',
+    process_plan TEXT COMMENT '处理方案',
+    process_result TEXT COMMENT '处理结果',
+    process_start_time TIMESTAMP NULL COMMENT '处理开始时间',
+    process_end_time TIMESTAMP NULL COMMENT '处理完成时间',
+    actual_hours DECIMAL(6,2) COMMENT '实际耗时(小时)',
+    
+    -- 费用信息
+    has_cost TINYINT DEFAULT 0 COMMENT '是否产生费用',
+    material_cost DECIMAL(10,2) DEFAULT 0 COMMENT '材料费用',
+    labor_cost DECIMAL(10,2) DEFAULT 0 COMMENT '人工费用',
+    total_cost DECIMAL(10,2) DEFAULT 0 COMMENT '总费用',
+    cost_payment_status VARCHAR(20) DEFAULT '未支付' COMMENT '费用支付状态',
+    
+    -- 状态跟踪
+    issue_status VARCHAR(20) DEFAULT '待处理' COMMENT '问题状态',
+    work_status VARCHAR(20) DEFAULT '未分配' COMMENT '工单状态',
+    satisfaction_level INT COMMENT '满意度评分(1-5分)',
+    satisfaction_feedback TEXT COMMENT '满意度反馈',
+    
+    -- 图片信息
+    issue_images TEXT COMMENT '问题图片(JSON数组)',
+    process_images TEXT COMMENT '处理过程图片(JSON数组)',
+    result_images TEXT COMMENT '处理结果图片(JSON数组)',
+    
+    -- 时间信息
+    reported_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '上报时间',
+    response_time TIMESTAMP NULL COMMENT '首次响应时间',
+    estimated_complete_time TIMESTAMP NULL COMMENT '预计完成时间',
+    actual_complete_time TIMESTAMP NULL COMMENT '实际完成时间',
+    
+    -- 关闭信息
+    closed_by BIGINT COMMENT '关闭人ID',
+    closed_time TIMESTAMP NULL COMMENT '关闭时间',
+    close_reason VARCHAR(200) COMMENT '关闭原因',
+    
+    -- 评价信息
+    is_evaluated TINYINT DEFAULT 0 COMMENT '是否已评价',
+    evaluation_time TIMESTAMP NULL COMMENT '评价时间',
+    evaluation_content TEXT COMMENT '评价内容',
+    
+    -- 系统信息
+    internal_remark TEXT COMMENT '内部备注',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (community_id) REFERENCES community_info(id),
+    FOREIGN KEY (owner_id) REFERENCES owner(id),
+    FOREIGN KEY (house_id) REFERENCES house(id),
+    FOREIGN KEY (assigned_staff_id) REFERENCES staff(id),
+    FOREIGN KEY (assigned_department_id) REFERENCES department(id),
+    FOREIGN KEY (processor_staff_id) REFERENCES staff(id),
+    FOREIGN KEY (closed_by) REFERENCES staff(id),
+    
+    INDEX idx_owner_issue (owner_id, reported_time),
+    INDEX idx_community_issue (community_id, issue_status),
+    INDEX idx_issue_type (issue_type),
+    INDEX idx_issue_status (issue_status),
+    INDEX idx_work_status (work_status),
+    INDEX idx_assigned_staff (assigned_staff_id),
+    INDEX idx_reported_time (reported_time)
+);
+```
+
+### 24.问题跟进记录表 (issue_follow_up)
+```sql
+CREATE TABLE issue_follow_up (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    issue_id BIGINT NOT NULL COMMENT '问题ID',
+    
+    -- 跟进信息
+    follow_up_type VARCHAR(50) NOT NULL COMMENT '跟进类型:业主补充/处理进展/状态变更/费用确认/满意度评价',
+    follow_up_content TEXT NOT NULL COMMENT '跟进内容',
+    
+    -- 操作人信息
+    operator_type VARCHAR(20) NOT NULL COMMENT '操作人类型:owner/staff/system',
+    operator_id BIGINT COMMENT '操作人ID',
+    operator_name VARCHAR(50) NOT NULL COMMENT '操作人姓名',
+    
+    -- 附件信息
+    attachments TEXT COMMENT '附件信息(JSON格式)',
+    
+    -- 系统信息
+    internal_note TEXT COMMENT '内部备注',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (issue_id) REFERENCES owner_issue(id) ON DELETE CASCADE,
+    
+    INDEX idx_issue_follow (issue_id, created_at),
+    INDEX idx_operator (operator_type, operator_id)
+);
+```
 
