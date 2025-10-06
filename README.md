@@ -9,7 +9,7 @@
 - **数据库**: MySQL 8.0
 - **缓存**: Redis
 - **安全认证**: JWT 0.11.5
-- **API文档**: SpringDoc OpenAPI (Swagger UI)
+- **API文档**: SpringDoc OpenAPI (Swagger UI) + Knife4j增强
 - **构建工具**: Maven
 - **其他**: Lombok, WebFlux, Langchain4j OpenAI
 
@@ -101,11 +101,33 @@ mvn spring-boot:run -pl community-web
 
 ## API文档
 
-项目集成了SpringDoc OpenAPI，启动项目后可通过以下地址访问API文档：
+项目集成了SpringDoc OpenAPI和Knife4j增强文档，启动项目后可通过以下地址访问API文档：
 
 ```
 http://localhost:8080/swagger-ui.html
 ```
+
+### API文档特性
+
+1. **自动生成文档**：基于代码注解自动生成API文档
+2. **在线测试**：可在文档界面直接测试API接口
+3. **分组管理**：按业务模块对API进行分组管理
+4. **安全认证**：支持JWT认证，在文档中可直接输入Token进行认证测试
+5. **离线文档**：支持导出离线HTML文档
+6. **文档增强**：Knife4j提供了更友好的文档界面和功能
+
+### 文档访问路径
+
+- **Swagger UI界面**：`http://localhost:8080/swagger-ui.html`
+- **Knife4j增强界面**：`http://localhost:8080/doc.html`
+- **OpenAPI JSON**：`http://localhost:8080/v3/api-docs`
+- **分组API文档**：`http://localhost:8080/v3/api-docs/community-system`
+
+### 离线文档导出
+
+可以通过Knife4j界面导出离线HTML文档，方便在没有网络环境时查阅。在Knife4j界面中，点击`文档管理`->`离线文档`，选择需要导出的版本，即可下载HTML格式的离线文档。
+
+Knife4j会自动生成一个`doc.html`文件，该文件包含了所有API接口的详细说明，可以直接在浏览器中打开查看。
 
 ## 项目特点
 

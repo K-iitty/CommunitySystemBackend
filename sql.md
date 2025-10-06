@@ -1194,3 +1194,196 @@ CREATE TABLE issue_follow_up (
 );
 ```
 
+## 插入测试数据
+
+### 1. 插入小区信息
+```sql
+INSERT INTO community_info (community_name, community_code, province, city, district, area_code, detail_address, total_buildings, total_households, total_area, building_area, parking_area, green_area, public_area, property_company, contact_phone, built_year, occupancy_rate, status) VALUES
+('阳光花园小区', 'YG-001', '陕西省', '西安市', '雁塔区', '610113', '长安南路123号', 8, 1200, 120000.00, 80000.00, 15000.00, 20000.00, 10000.00, '西安阳光物业服务有限公司', '029-88888888', 2015, 95.50, '正常'),
+('绿城百合小区', 'LC-002', '陕西省', '西安市', '莲湖区', '610104', '大庆路456号', 6, 800, 90000.00, 65000.00, 12000.00, 15000.00, 8000.00, '绿城物业服务有限公司', '029-66666666', 2018, 92.30, '正常');
+```
+
+### 2. 插入部门信息
+```sql
+INSERT INTO department (department_name, parent_id, department_code, department_level, sort_order, status, description) VALUES
+('物业管理部', 0, 'D001', 1, 1, '启用', '负责小区日常物业管理'),
+('工程维修部', 0, 'D002', 1, 2, '启用', '负责小区设施设备维护'),
+('安全管理部', 0, 'D003', 1, 3, '启用', '负责小区安全保卫工作'),
+('客户服务部', 0, 'D004', 1, 4, '启用', '负责业主客户服务'),
+('财务部', 0, 'D005', 1, 5, '启用', '负责小区财务管理');
+```
+
+### 3. 插入角色信息
+```sql
+INSERT INTO role (role_name, role_code, role_type, description, member_count, status, permissions) VALUES
+('物业经理', 'R001', 'manager', '负责整个小区的管理工作', 1, '启用', '{"community_manage":true,"staff_manage":true,"finance_manage":true}'),
+('客服主管', 'R002', 'supervisor', '负责客户服务管理工作', 1, '启用', '{"customer_service":true,"complaint_handle":true}'),
+('维修工程师', 'R003', 'staff', '负责小区设施设备维修', 5, '启用', '{"repair_manage":true,"equipment_inspect":true}'),
+('安保人员', 'R004', 'staff', '负责小区安全保卫工作', 8, '启用', '{"security_patrol":true,"access_control":true}'),
+('客服专员', 'R005', 'staff', '负责业主日常服务', 4, '启用', '{"customer_service":true,"fee_collection":true}');
+```
+
+### 4. 插入员工信息
+```sql
+INSERT INTO staff (username, password, name, phone, id_card, work_no, gender, department_id, role_id, position, job_title, hire_date, work_status, is_manager, account_status, remark) VALUES
+('manager001', '$2a$10$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', '张三', '13800000001', '610113198501011234', 'EMP001', '男', 1, 1, '物业经理', '中级工程师', '2015-03-15', '在职', 1, '正常', '小区物业经理'),
+('service001', '$2a$10$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', '李四', '13800000002', '610113198802022345', 'EMP002', '女', 4, 2, '客服主管', '助理工程师', '2018-06-20', '在职', 0, '正常', '客服部主管'),
+('repair001', '$2a$10$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', '王五', '13800000003', '610113199003033456', 'EMP003', '男', 2, 3, '维修工程师', '技术员', '2020-04-10', '在职', 0, '正常', '水电维修工程师'),
+('security001', '$2a$10$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', '赵六', '13800000004', '610113198704044567', 'EMP004', '男', 3, 4, '安保队长', '保安员', '2019-08-25', '在职', 0, '正常', '安保部门负责人');
+```
+
+### 5. 插入楼栋信息
+```sql
+INSERT INTO building (community_id, building_no, building_name, building_type, building_structure, building_purpose, total_floors, underground_floors, total_households, building_area, usable_area, public_area, built_date, has_elevator, elevator_count, status) VALUES
+(1, 'A1', 'A1栋', '住宅', '钢筋混凝土', '住宅', 18, 2, 120, 8000.00, 6500.00, 1500.00, '2015-10-01', 1, 2, '正常'),
+(1, 'B2', 'B2栋', '住宅', '钢筋混凝土', '住宅', 24, 2, 144, 12000.00, 9600.00, 2400.00, '2015-12-01', 1, 3, '正常'),
+(2, 'C1', 'C1栋', '住宅', '钢筋混凝土', '住宅', 20, 1, 100, 7500.00, 6000.00, 1500.00, '2018-05-01', 1, 2, '正常');
+```
+
+### 6. 插入房屋信息
+```sql
+INSERT INTO house (community_id, building_id, room_no, full_room_no, house_code, building_area, usable_area, shared_area, house_type, house_layout, house_orientation, house_status) VALUES
+(1, 1, '101', 'A1-1-101', 'HOUSE-A1-101', 85.50, 68.40, 17.10, '住宅', '三室一厅', '南', '已售'),
+(1, 1, '102', 'A1-1-102', 'HOUSE-A1-102', 85.50, 68.40, 17.10, '住宅', '三室一厅', '南', '已售'),
+(1, 1, '201', 'A1-2-201', 'HOUSE-A1-201', 110.00, 88.00, 22.00, '住宅', '三室两厅', '北', '已售'),
+(1, 2, '1001', 'B2-1-1001', 'HOUSE-B2-1001', 140.00, 112.00, 28.00, '住宅', '四室两厅', '南北通透', '已售'),
+(2, 3, '501', 'C1-5-501', 'HOUSE-C1-501', 95.00, 76.00, 19.00, '住宅', '三室一厅', '东', '已售');
+```
+
+### 7. 插入业主信息
+```sql
+INSERT INTO owner (username, password, name, phone, id_card, gender, owner_type, current_address, status) VALUES
+('owner001', '$2a$10$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', '刘先生', '13900000001', '610113198001015678', '男', '业主', '陕西省西安市长安南路123号阳光花园A1-1-101', '正常'),
+('owner002', '$2a$10$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', '陈女士', '13900000002', '610113198202026789', '女', '业主', '陕西省西安市长安南路123号阳光花园A1-1-102', '正常'),
+('owner003', '$2a$10$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', '杨先生', '13900000003', '610113197803037890', '男', '业主', '陕西省西安市长安南路123号阳光花园A1-2-201', '正常');
+```
+
+### 8. 插入业主房屋关联信息
+```sql
+INSERT INTO house_owner (house_id, owner_id, relationship, is_primary, start_date, status) VALUES
+(1, 1, '业主', 1, '2016-01-15', '正常'),
+(2, 2, '业主', 1, '2016-02-20', '正常'),
+(3, 3, '业主', 1, '2016-03-10', '正常');
+```
+
+### 9. 插入停车场信息
+```sql
+INSERT INTO parking_lot (community_id, lot_name, lot_code, total_spaces, fixed_spaces, temp_spaces, status) VALUES
+(1, '地下停车场', 'PARK-001', 200, 120, 80, '启用'),
+(1, '地面停车场', 'PARK-002', 50, 30, 20, '启用'),
+(2, '地下停车场', 'PARK-003', 150, 100, 50, '启用');
+```
+
+### 10. 插入车辆信息
+```sql
+INSERT INTO vehicle (owner_id, plate_number, vehicle_type, brand, model, color, status) VALUES
+(1, '陕A12345', '小型车', '丰田', '卡罗拉', '白色', '正常'),
+(2, '陕A67890', '小型车', '本田', '雅阁', '黑色', '正常'),
+(3, '陕B11111', '小型车', '大众', '帕萨特', '银色', '正常');
+```
+
+### 11. 插入车位信息
+```sql
+INSERT INTO parking_space (parking_lot_id, space_no, full_space_no, space_type, space_status, owner_id, vehicle_id) VALUES
+(1, 'B001', '地下-B001', '固定', '已租', 1, 1),
+(1, 'B002', '地下-B002', '固定', '已租', 2, 2),
+(1, 'B003', '地下-B003', '固定', '已租', 3, 3);
+```
+
+### 12. 插入仪表配置信息
+```sql
+INSERT INTO meter_config (category_name, meter_type, unit, charge_standard, unit_price, status) VALUES
+('电表', '单相电表', 'kWh', '按月收费', 0.55, '启用'),
+('水表', '机械水表', '吨', '按月收费', 3.5, '启用'),
+('燃气表', '智能燃气表', '立方米', '按月收费', 2.8, '启用');
+```
+
+### 13. 插入仪表信息
+```sql
+INSERT INTO meter_info (community_id, house_id, config_id, meter_name, category_name, meter_type, meter_code, initial_reading, current_reading, meter_status) VALUES
+(1, 1, 1, '电表001', '电表', '单相电表', 'ELE-001', 0.00, 1200.50, '正常'),
+(1, 1, 2, '水表001', '水表', '机械水表', 'WAT-001', 0.00, 240.80, '正常'),
+(1, 2, 1, '电表002', '电表', '单相电表', 'ELE-002', 0.00, 980.30, '正常');
+```
+
+### 14. 插入系统管理员信息
+```sql
+INSERT INTO system_admin (username, password, email, phone, real_name, role_type, status) VALUES
+('admin', '$2a$10$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 'admin@community.com', '13888888888', '超级管理员', 'super_admin', '正常'),
+('operator', '$2a$10$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 'operator@community.com', '13999999999', '操作员', 'operator', '正常');
+```
+
+### 15. 插入社区公告信息
+```sql
+INSERT INTO community_notice (community_id, created_by, title, content, notice_type, start_time, end_time, status) VALUES
+(1, 1, '停水通知', '因供水管道检修，本小区将于2023年10月15日8:00-17:00停水，请各位业主提前做好储水准备。', '紧急通知', NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), '已发布'),
+(1, 1, '业主大会通知', '兹定于2023年10月20日14:00在小区会所召开业主大会，请各位业主准时参加。', '社区公告', NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), '已发布');
+```
+
+### 16. 插入门禁设备信息
+```sql
+INSERT INTO access_control_device (community_id, building_id, device_name, device_type, device_code, install_location, device_status) VALUES
+(1, 1, 'A1栋入口门禁', '人脸识别', 'AC-A1-001', 'A1栋一楼入口', '启用'),
+(1, 2, 'B2栋入口门禁', '刷卡识别', 'AC-B2-001', 'B2栋一楼入口', '启用'),
+(1, NULL, '小区大门门禁', '人脸识别+刷卡', 'AC-MAIN-001', '小区正门', '启用');
+```
+
+### 17. 插入门禁记录信息
+```sql
+INSERT INTO access_control_record (person_id, person_type, person_name, person_phone, device_id, community_id, access_type, access_method, access_time, verify_result) VALUES
+(1, 'owner', '刘先生', '13900000001', 1, 1, 'entry', '人脸识别', DATE_ADD(NOW(), INTERVAL -1 HOUR), '成功'),
+(2, 'owner', '陈女士', '13900000002', 1, 1, 'entry', '人脸识别', DATE_ADD(NOW(), INTERVAL -30 MINUTE), '成功'),
+(3, 'owner', '杨先生', '13900000003', 3, 1, 'entry', '刷卡识别', DATE_ADD(NOW(), INTERVAL -15 MINUTE), '成功');
+```
+
+### 18. 插入业主问题信息
+```sql
+INSERT INTO owner_issue (community_id, owner_id, house_id, issue_title, issue_content, issue_type, contact_name, contact_phone, issue_status, work_status) VALUES
+(1, 1, 1, '水管漏水', '厨房水龙头下方水管漏水，需要紧急维修', '报修服务', '刘先生', '13900000001', '待处理', '未分配'),
+(1, 2, 2, '电梯故障', 'B2栋2号电梯无法正常使用', '报修服务', '陈女士', '13900000002', '待处理', '未分配');
+```
+
+### 19. 插入问题跟进记录信息
+```sql
+INSERT INTO issue_follow_up (issue_id, follow_up_type, follow_up_content, operator_type, operator_id, operator_name) VALUES
+(1, '处理进展', '已安排维修人员上门检查', 'staff', 3, '王五'),
+(2, '状态变更', '已指派给电梯维保单位', 'staff', 3, '王五');
+```
+
+### 20. 插入停车记录信息
+```sql
+INSERT INTO parking_record (vehicle_id, plate_number, vehicle_type, owner_id, owner_name, owner_phone, parking_lot_id, entry_time, payment_status) VALUES
+(1, '陕A12345', '小型车', 1, '刘先生', '13900000001', 1, DATE_ADD(NOW(), INTERVAL -2 HOUR), '未支付'),
+(2, '陕A67890', '小型车', 2, '陈女士', '13900000002', 1, DATE_ADD(NOW(), INTERVAL -1 HOUR), '未支付');
+```
+
+### 21. 插入员工扩展信息
+```sql
+INSERT INTO staff_extension (staff_id, extension_key, extension_value, value_type) VALUES
+(1, '学历', '本科', 'string'),
+(1, '紧急联系人', '李太太', 'string'),
+(2, '学历', '大专', 'string'),
+(3, '技能证书', '电工证', 'string');
+```
+
+### 22. 插入抄表记录信息
+```sql
+INSERT INTO meter_reading (meter_id, previous_reading, current_reading, usage_amount, unit, reading_date, reading_time, reader_id, reader_name, category_name) VALUES
+(1, 1100.00, 1200.50, 100.50, 'kWh', CURDATE(), NOW(), 3, '王五', '电表'),
+(2, 220.00, 240.80, 20.80, '吨', CURDATE(), NOW(), 3, '王五', '水表');
+```
+
+### 23. 插入智能问答知识库信息
+```sql
+INSERT INTO smart_qa_knowledge (category, title, description, file_path, file_name, file_type, status, created_by) VALUES
+('物业服务', '物业服务标准', '小区物业服务标准说明', '/files/property_service_standard.pdf', '物业服务标准.pdf', 'pdf', '启用', 1),
+('安全管理', '消防安全指南', '小区消防安全相关指南', '/files/fire_safety_guide.pdf', '消防安全指南.pdf', 'pdf', '启用', 1);
+```
+
+### 24. 插入管理员操作日志信息
+```sql
+INSERT INTO admin_operation_log (admin_id, operation_module, operation_type, operation_description, request_url, request_method, request_ip, response_code, operation_status) VALUES
+(1, '业主管理', '新增', '新增业主信息', '/api/owner', 'POST', '127.0.0.1', 200, '成功'),
+(1, '公告管理', '发布', '发布停水通知', '/api/notice', 'POST', '127.0.0.1', 200, '成功');
+```
+
