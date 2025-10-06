@@ -41,4 +41,24 @@ public class BuildingServiceImpl extends ServiceImpl<BuildingDao, Building> impl
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<Building> selectBuildingPageByMultiple(IPage<Building> page, String buildingName, String buildingNo) {
+        LambdaQueryWrapper<Building> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据楼栋名称模糊查询
+        if (StringUtils.isNotBlank(buildingName)) {
+            queryWrapper.like(Building::getBuildingName, buildingName);
+        }
+        
+        // 根据楼栋编号模糊查询
+        if (StringUtils.isNotBlank(buildingNo)) {
+            queryWrapper.like(Building::getBuildingNo, buildingNo);
+        }
+        
+        // 默认按创建时间倒序排列
+        queryWrapper.orderByDesc(Building::getCreatedAt);
+        
+        return this.page(page, queryWrapper);
+    }
 }

@@ -13,4 +13,13 @@ public interface CommunityInfoService extends IService<CommunityInfo> {
      * @return 社区信息分页数据
      */
     IPage<CommunityInfo> selectCommunityInfoPage(IPage<CommunityInfo> page, CommunityInfo communityInfo);
+
+    /**
+     * 根据社区名称或详细地址分页查询社区信息
+     * @param page 分页对象
+     * @param communityName 社区名称
+     * @param detailAddress 详细地址
+     * @return 社区信息分页数据
+     */
+    IPage<CommunityInfo> selectCommunityInfoPageByMultiple(IPage<CommunityInfo> page, String communityName, String detailAddress);
 }

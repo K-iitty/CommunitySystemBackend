@@ -51,4 +51,34 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerDao, Owner> implements Ow
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<Owner> selectOwnerPageByMultiple(IPage<Owner> page, String name, String phone, String ownerType, String status) {
+        LambdaQueryWrapper<Owner> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据姓名模糊查询
+        if (StringUtils.isNotBlank(name)) {
+            queryWrapper.like(Owner::getName, name);
+        }
+        
+        // 根据手机号查询
+        if (StringUtils.isNotBlank(phone)) {
+            queryWrapper.eq(Owner::getPhone, phone);
+        }
+        
+        // 根据业主类型查询
+        if (StringUtils.isNotBlank(ownerType)) {
+            queryWrapper.eq(Owner::getOwnerType, ownerType);
+        }
+        
+        // 根据状态查询
+        if (StringUtils.isNotBlank(status)) {
+            queryWrapper.eq(Owner::getStatus, status);
+        }
+        
+        // 默认按创建时间倒序排列
+        queryWrapper.orderByDesc(Owner::getCreatedAt);
+        
+        return this.page(page, queryWrapper);
+    }
 }

@@ -49,6 +49,31 @@ public class  AccessControlDeviceController {
     }
 
     /**
+     * 根据设备名称或设备编码分页查询门禁设备信息
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页大小
+     * @param deviceName 设备名称
+     * @param deviceCode 设备编码
+     * @return 门禁设备信息分页数据
+     */
+    @GetMapping("/search")
+    @Operation(summary = "根据设备名称或设备编码分页查询门禁设备信息", description = "根据设备名称或设备编码分页查询门禁设备信息")
+    @ApiOperationSupport(order = 1, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize,
+                                   @Parameter(description = "设备名称") @RequestParam(required = false) String deviceName,
+                                   @Parameter(description = "设备编码") @RequestParam(required = false) String deviceCode) {
+        IPage<AccessControlDevice> page = new Page<>(pageNum, pageSize);
+        IPage<AccessControlDevice> result = accessControlDeviceService.selectAccessControlDevicePageByMultiple(page, deviceName, deviceCode);
+        return Result.ok().put("data", result.getRecords())
+                .put("total", result.getTotal())
+                .put("pageNum", result.getCurrent())
+                .put("pageSize", result.getSize());
+    }
+
+    /**
      * 根据ID查询门禁设备信息
      *
      * @param id 门禁设备ID

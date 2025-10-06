@@ -13,4 +13,13 @@ public interface BuildingService extends IService<Building> {
      * @return 楼栋信息分页数据
      */
     IPage<Building> selectBuildingPage(IPage<Building> page, Building building);
+
+    /**
+     * 根据楼栋名称或楼栋编号分页查询楼栋信息
+     * @param page 分页对象
+     * @param buildingName 楼栋名称
+     * @param buildingNo 楼栋编号
+     * @return 楼栋信息分页数据
+     */
+    IPage<Building> selectBuildingPageByMultiple(IPage<Building> page, String buildingName, String buildingNo);
 }

@@ -50,6 +50,29 @@ public class ParkingSpaceController {
     }
 
     /**
+     * 根据车位编号或车位号分页查询车位信息
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页大小
+     * @param spaceNo 车位编号或车位号
+     * @return 车位信息分页数据
+     */
+    @GetMapping("/search")
+    @Operation(summary = "根据车位编号或车位号分页查询车位信息", description = "根据车位编号或车位号分页查询车位信息")
+    @ApiOperationSupport(order = 1, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize,
+                                   @Parameter(description = "车位编号或车位号") @RequestParam(required = false) String spaceNo) {
+        IPage<ParkingSpace> page = new Page<>(pageNum, pageSize);
+        IPage<ParkingSpace> result = parkingSpaceService.selectParkingSpacePageByMultiple(page, spaceNo);
+        return Result.ok().put("data", result.getRecords())
+                .put("total", result.getTotal())
+                .put("pageNum", result.getCurrent())
+                .put("pageSize", result.getSize());
+    }
+
+    /**
      * 根据ID查询车位信息
      *
      * @param id 车位ID

@@ -41,4 +41,19 @@ public class ParkingSpaceServiceImpl extends ServiceImpl<ParkingSpaceDao, Parkin
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<ParkingSpace> selectParkingSpacePageByMultiple(IPage<ParkingSpace> page, String spaceNo) {
+        LambdaQueryWrapper<ParkingSpace> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据车位编号模糊查询
+        if (StringUtils.isNotBlank(spaceNo)) {
+            queryWrapper.like(ParkingSpace::getSpaceNo, spaceNo);
+        }
+        
+        // 默认按创建时间倒序排列
+        queryWrapper.orderByDesc(ParkingSpace::getCreatedAt);
+        
+        return this.page(page, queryWrapper);
+    }
 }

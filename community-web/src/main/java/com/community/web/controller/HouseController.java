@@ -52,6 +52,31 @@ public class HouseController {
     }
 
     /**
+     * 根据房屋编码或房号分页查询房屋信息
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页大小
+     * @param houseCode 房屋编码
+     * @param roomNo 房号
+     * @return 房屋信息分页数据
+     */
+    @GetMapping("/search")
+    @Operation(summary = "根据房屋编码或房号分页查询房屋信息", description = "根据房屋编码或房号分页查询房屋信息")
+    @ApiOperationSupport(order = 1, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize,
+                                   @Parameter(description = "房屋编码") @RequestParam(required = false) String houseCode,
+                                   @Parameter(description = "房号") @RequestParam(required = false) String roomNo) {
+        IPage<House> page = new Page<>(pageNum, pageSize);
+        IPage<House> result = houseService.selectHousePageByMultiple(page, houseCode, roomNo);
+        return Result.ok().put("data", result.getRecords())
+                .put("total", result.getTotal())
+                .put("pageNum", result.getCurrent())
+                .put("pageSize", result.getSize());
+    }
+
+    /**
      * 根据ID查询房屋信息
      *
      * @param id 房屋ID

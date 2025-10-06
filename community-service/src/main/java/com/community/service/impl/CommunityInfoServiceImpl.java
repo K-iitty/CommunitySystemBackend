@@ -41,4 +41,24 @@ public class CommunityInfoServiceImpl extends ServiceImpl<CommunityInfoDao, Comm
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<CommunityInfo> selectCommunityInfoPageByMultiple(IPage<CommunityInfo> page, String communityName, String detailAddress) {
+        LambdaQueryWrapper<CommunityInfo> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据社区名称模糊查询
+        if (StringUtils.isNotBlank(communityName)) {
+            queryWrapper.like(CommunityInfo::getCommunityName, communityName);
+        }
+        
+        // 根据详细地址模糊查询
+        if (StringUtils.isNotBlank(detailAddress)) {
+            queryWrapper.like(CommunityInfo::getDetailAddress, detailAddress);
+        }
+        
+        // 默认按创建时间倒序排列
+        queryWrapper.orderByDesc(CommunityInfo::getCreatedAt);
+        
+        return this.page(page, queryWrapper);
+    }
 }

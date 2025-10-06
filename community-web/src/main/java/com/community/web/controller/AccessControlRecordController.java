@@ -46,6 +46,35 @@ public class AccessControlRecordController {
     }
 
     /**
+     * 根据设备ID或人员姓名或通行方式或验证结果分页查询门禁记录信息
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页大小
+     * @param deviceId 设备ID
+     * @param personName 人员姓名
+     * @param accessMethod 通行方式
+     * @param verifyResult 验证结果
+     * @return 门禁记录信息分页数据
+     */
+    @GetMapping("/search")
+    @Operation(summary = "根据设备ID或人员姓名或通行方式或验证结果分页查询门禁记录信息", description = "根据设备ID或人员姓名或通行方式或验证结果分页查询门禁记录信息")
+    @ApiOperationSupport(order = 1, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize,
+                                   @Parameter(description = "设备ID") @RequestParam(required = false) Long deviceId,
+                                   @Parameter(description = "人员姓名") @RequestParam(required = false) String personName,
+                                   @Parameter(description = "通行方式") @RequestParam(required = false) String accessMethod,
+                                   @Parameter(description = "验证结果") @RequestParam(required = false) String verifyResult) {
+        IPage<AccessControlRecord> page = new Page<>(pageNum, pageSize);
+        IPage<AccessControlRecord> result = accessControlRecordService.selectAccessControlRecordPageByMultiple(page, deviceId, personName, accessMethod, verifyResult);
+        return Result.ok().put("data", result.getRecords())
+                .put("total", result.getTotal())
+                .put("pageNum", result.getCurrent())
+                .put("pageSize", result.getSize());
+    }
+
+    /**
      * 根据ID查询门禁记录信息
      *
      * @param id 门禁记录ID

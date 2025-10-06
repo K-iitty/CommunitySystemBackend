@@ -46,4 +46,24 @@ public class HouseServiceImpl extends ServiceImpl<HouseDao, House> implements Ho
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<House> selectHousePageByMultiple(IPage<House> page, String houseCode, String roomNo) {
+        LambdaQueryWrapper<House> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据房屋编码精确查询
+        if (StringUtils.isNotBlank(houseCode)) {
+            queryWrapper.eq(House::getHouseCode, houseCode);
+        }
+        
+        // 根据房间号模糊查询
+        if (StringUtils.isNotBlank(roomNo)) {
+            queryWrapper.like(House::getRoomNo, roomNo);
+        }
+        
+        // 默认按创建时间倒序排列
+        queryWrapper.orderByDesc(House::getCreatedAt);
+        
+        return this.page(page, queryWrapper);
+    }
 }

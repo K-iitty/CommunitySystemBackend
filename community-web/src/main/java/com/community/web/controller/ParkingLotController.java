@@ -52,6 +52,31 @@ public class ParkingLotController {
     }
 
     /**
+     * 根据停车场名称或停车场编码分页查询停车场信息
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页大小
+     * @param lotName 停车场名称
+     * @param lotCode 停车场编码
+     * @return 停车场信息分页数据
+     */
+    @GetMapping("/search")
+    @Operation(summary = "根据停车场名称或停车场编码分页查询停车场信息", description = "根据停车场名称或停车场编码分页查询停车场信息")
+    @ApiOperationSupport(order = 1, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize,
+                                   @Parameter(description = "停车场名称") @RequestParam(required = false) String lotName,
+                                   @Parameter(description = "停车场编码") @RequestParam(required = false) String lotCode) {
+        IPage<ParkingLot> page = new Page<>(pageNum, pageSize);
+        IPage<ParkingLot> result = parkingLotService.selectParkingLotPageByMultiple(page, lotName, lotCode);
+        return Result.ok().put("data", result.getRecords())
+                .put("total", result.getTotal())
+                .put("pageNum", result.getCurrent())
+                .put("pageSize", result.getSize());
+    }
+
+    /**
      * 根据ID查询停车场信息
      *
      * @param id 停车场ID

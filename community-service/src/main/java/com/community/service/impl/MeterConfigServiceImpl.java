@@ -36,4 +36,29 @@ public class MeterConfigServiceImpl extends ServiceImpl<MeterConfigDao, MeterCon
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<MeterConfig> selectMeterConfigPageByMultiple(IPage<MeterConfig> page, String categoryName, String meterType, String status) {
+        LambdaQueryWrapper<MeterConfig> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据分类名称模糊查询
+        if (StringUtils.isNotBlank(categoryName)) {
+            queryWrapper.like(MeterConfig::getCategoryName, categoryName);
+        }
+        
+        // 根据仪表种类查询
+        if (StringUtils.isNotBlank(meterType)) {
+            queryWrapper.eq(MeterConfig::getMeterType, meterType);
+        }
+        
+        // 根据状态查询
+        if (StringUtils.isNotBlank(status)) {
+            queryWrapper.eq(MeterConfig::getStatus, status);
+        }
+        
+        // 默认按创建时间倒序排列
+        queryWrapper.orderByDesc(MeterConfig::getCreatedAt);
+        
+        return this.page(page, queryWrapper);
+    }
 }

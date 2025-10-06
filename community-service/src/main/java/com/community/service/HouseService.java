@@ -13,4 +13,13 @@ public interface HouseService extends IService<House> {
      * @return 房屋信息分页数据
      */
     IPage<House> selectHousePage(IPage<House> page, House house);
+
+    /**
+     * 根据房屋编码或房号分页查询房屋信息
+     * @param page 分页对象
+     * @param houseCode 房屋编码
+     * @param roomNo 房号
+     * @return 房屋信息分页数据
+     */
+    IPage<House> selectHousePageByMultiple(IPage<House> page, String houseCode, String roomNo);
 }

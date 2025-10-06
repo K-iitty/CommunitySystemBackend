@@ -56,4 +56,34 @@ public class AccessControlRecordServiceImpl extends ServiceImpl<AccessControlRec
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<AccessControlRecord> selectAccessControlRecordPageByMultiple(IPage<AccessControlRecord> page, Long deviceId, String personName, String accessMethod, String verifyResult) {
+        LambdaQueryWrapper<AccessControlRecord> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据设备ID查询
+        if (deviceId != null) {
+            queryWrapper.eq(AccessControlRecord::getDeviceId, deviceId);
+        }
+        
+        // 根据人员姓名模糊查询
+        if (StringUtils.isNotBlank(personName)) {
+            queryWrapper.like(AccessControlRecord::getPersonName, personName);
+        }
+        
+        // 根据通行方式查询
+        if (StringUtils.isNotBlank(accessMethod)) {
+            queryWrapper.eq(AccessControlRecord::getAccessMethod, accessMethod);
+        }
+        
+        // 根据验证结果查询
+        if (StringUtils.isNotBlank(verifyResult)) {
+            queryWrapper.eq(AccessControlRecord::getVerifyResult, verifyResult);
+        }
+        
+        // 默认按出入时间倒序排列
+        queryWrapper.orderByDesc(AccessControlRecord::getAccessTime);
+        
+        return this.page(page, queryWrapper);
+    }
 }

@@ -52,6 +52,31 @@ public class BuildingController {
     }
 
     /**
+     * 根据楼栋名称或楼栋编号分页查询楼栋信息
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页大小
+     * @param buildingName 楼栋名称
+     * @param buildingNo 楼栋编号
+     * @return 楼栋信息分页数据
+     */
+    @GetMapping("/search")
+    @Operation(summary = "根据楼栋名称或楼栋编号分页查询楼栋信息", description = "根据楼栋名称或楼栋编号分页查询楼栋信息")
+    @ApiOperationSupport(order = 1, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize,
+                                   @Parameter(description = "楼栋名称") @RequestParam(required = false) String buildingName,
+                                   @Parameter(description = "楼栋编号") @RequestParam(required = false) String buildingNo) {
+        IPage<Building> page = new Page<>(pageNum, pageSize);
+        IPage<Building> result = buildingService.selectBuildingPageByMultiple(page, buildingName, buildingNo);
+        return Result.ok().put("data", result.getRecords())
+                .put("total", result.getTotal())
+                .put("pageNum", result.getCurrent())
+                .put("pageSize", result.getSize());
+    }
+
+    /**
      * 根据ID查询楼栋信息
      *
      * @param id 楼栋ID

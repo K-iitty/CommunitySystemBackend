@@ -56,4 +56,34 @@ public class MeterInfoServiceImpl extends ServiceImpl<MeterInfoDao, MeterInfo> i
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<MeterInfo> selectMeterInfoPageByMultiple(IPage<MeterInfo> page, String meterCode, String meterName, String locationType, String meterStatus) {
+        LambdaQueryWrapper<MeterInfo> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据仪表编码查询
+        if (StringUtils.isNotBlank(meterCode)) {
+            queryWrapper.eq(MeterInfo::getMeterCode, meterCode);
+        }
+        
+        // 根据仪表名称模糊查询
+        if (StringUtils.isNotBlank(meterName)) {
+            queryWrapper.like(MeterInfo::getMeterName, meterName);
+        }
+        
+        // 根据位置类型查询
+        if (StringUtils.isNotBlank(locationType)) {
+            queryWrapper.eq(MeterInfo::getLocationType, locationType);
+        }
+        
+        // 根据仪表状态查询
+        if (StringUtils.isNotBlank(meterStatus)) {
+            queryWrapper.eq(MeterInfo::getMeterStatus, meterStatus);
+        }
+        
+        // 默认按创建时间倒序排列
+        queryWrapper.orderByDesc(MeterInfo::getCreatedAt);
+        
+        return this.page(page, queryWrapper);
+    }
 }

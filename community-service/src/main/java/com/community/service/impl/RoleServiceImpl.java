@@ -41,4 +41,34 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<Role> selectRolePageByMultiple(IPage<Role> page, String roleName, String roleCode, String roleType, String status) {
+        LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据角色名称模糊查询
+        if (StringUtils.isNotBlank(roleName)) {
+            queryWrapper.like(Role::getRoleName, roleName);
+        }
+        
+        // 根据角色编码查询
+        if (StringUtils.isNotBlank(roleCode)) {
+            queryWrapper.eq(Role::getRoleCode, roleCode);
+        }
+        
+        // 根据角色类型查询
+        if (StringUtils.isNotBlank(roleType)) {
+            queryWrapper.eq(Role::getRoleType, roleType);
+        }
+        
+        // 根据状态查询
+        if (StringUtils.isNotBlank(status)) {
+            queryWrapper.eq(Role::getStatus, status);
+        }
+        
+        // 默认按创建时间倒序排列
+        queryWrapper.orderByDesc(Role::getCreatedAt);
+        
+        return this.page(page, queryWrapper);
+    }
 }

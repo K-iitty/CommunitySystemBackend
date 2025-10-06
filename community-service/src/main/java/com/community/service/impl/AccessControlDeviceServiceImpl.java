@@ -46,4 +46,24 @@ public class AccessControlDeviceServiceImpl extends ServiceImpl<AccessControlDev
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<AccessControlDevice> selectAccessControlDevicePageByMultiple(IPage<AccessControlDevice> page, String deviceName, String deviceCode) {
+        LambdaQueryWrapper<AccessControlDevice> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据设备名称模糊查询
+        if (StringUtils.isNotBlank(deviceName)) {
+            queryWrapper.like(AccessControlDevice::getDeviceName, deviceName);
+        }
+        
+        // 根据设备编码查询
+        if (StringUtils.isNotBlank(deviceCode)) {
+            queryWrapper.eq(AccessControlDevice::getDeviceCode, deviceCode);
+        }
+        
+        // 默认按创建时间倒序排列
+        queryWrapper.orderByDesc(AccessControlDevice::getCreatedAt);
+        
+        return this.page(page, queryWrapper);
+    }
 }

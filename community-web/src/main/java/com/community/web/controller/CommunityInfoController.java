@@ -52,6 +52,31 @@ public class CommunityInfoController {
     }
 
     /**
+     * 根据社区名称或详细地址分页查询社区信息
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页大小
+     * @param communityName 社区名称
+     * @param detailAddress 详细地址
+     * @return 社区信息分页数据
+     */
+    @GetMapping("/search")
+    @Operation(summary = "根据社区名称或详细地址分页查询社区信息", description = "根据社区名称或详细地址分页查询社区信息")
+    @ApiOperationSupport(order = 1, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize,
+                                   @Parameter(description = "社区名称") @RequestParam(required = false) String communityName,
+                                   @Parameter(description = "详细地址") @RequestParam(required = false) String detailAddress) {
+        IPage<CommunityInfo> page = new Page<>(pageNum, pageSize);
+        IPage<CommunityInfo> result = communityInfoService.selectCommunityInfoPageByMultiple(page, communityName, detailAddress);
+        return Result.ok().put("data", result.getRecords())
+                .put("total", result.getTotal())
+                .put("pageNum", result.getCurrent())
+                .put("pageSize", result.getSize());
+    }
+
+    /**
      * 根据ID查询社区信息
      *
      * @param id 社区ID

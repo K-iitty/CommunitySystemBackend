@@ -41,4 +41,24 @@ public class VehicleServiceImpl extends ServiceImpl<VehicleDao, Vehicle> impleme
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<Vehicle> selectVehiclePageByMultiple(IPage<Vehicle> page, String plateNumber, Long ownerId) {
+        LambdaQueryWrapper<Vehicle> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据车牌号模糊查询
+        if (StringUtils.isNotBlank(plateNumber)) {
+            queryWrapper.like(Vehicle::getPlateNumber, plateNumber);
+        }
+        
+        // 根据车主ID查询
+        if (ownerId != null) {
+            queryWrapper.eq(Vehicle::getOwnerId, ownerId);
+        }
+        
+        // 默认按创建时间倒序排列
+        queryWrapper.orderByDesc(Vehicle::getCreatedAt);
+        
+        return this.page(page, queryWrapper);
+    }
 }

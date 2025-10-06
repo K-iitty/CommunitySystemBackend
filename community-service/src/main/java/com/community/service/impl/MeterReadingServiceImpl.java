@@ -46,4 +46,34 @@ public class MeterReadingServiceImpl extends ServiceImpl<MeterReadingDao, MeterR
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<MeterReading> selectMeterReadingPageByMultiple(IPage<MeterReading> page, Long meterId, String readerName, String readingType, String readingStatus) {
+        LambdaQueryWrapper<MeterReading> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据仪表ID查询
+        if (meterId != null) {
+            queryWrapper.eq(MeterReading::getMeterId, meterId);
+        }
+        
+        // 根据抄表人姓名模糊查询
+        if (StringUtils.isNotBlank(readerName)) {
+            queryWrapper.like(MeterReading::getReaderName, readerName);
+        }
+        
+        // 根据抄表类型查询
+        if (StringUtils.isNotBlank(readingType)) {
+            queryWrapper.eq(MeterReading::getReadingType, readingType);
+        }
+        
+        // 根据抄表状态查询
+        if (StringUtils.isNotBlank(readingStatus)) {
+            queryWrapper.eq(MeterReading::getReadingStatus, readingStatus);
+        }
+        
+        // 默认按抄表时间倒序排列
+        queryWrapper.orderByDesc(MeterReading::getReadingTime);
+        
+        return this.page(page, queryWrapper);
+    }
 }

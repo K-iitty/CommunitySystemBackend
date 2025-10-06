@@ -41,4 +41,24 @@ public class ParkingLotServiceImpl extends ServiceImpl<ParkingLotDao, ParkingLot
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<ParkingLot> selectParkingLotPageByMultiple(IPage<ParkingLot> page, String lotName, String lotCode) {
+        LambdaQueryWrapper<ParkingLot> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据停车场名称模糊查询
+        if (StringUtils.isNotBlank(lotName)) {
+            queryWrapper.like(ParkingLot::getLotName, lotName);
+        }
+        
+        // 根据停车场编码查询
+        if (StringUtils.isNotBlank(lotCode)) {
+            queryWrapper.eq(ParkingLot::getLotCode, lotCode);
+        }
+        
+        // 默认按创建时间倒序排列
+        queryWrapper.orderByDesc(ParkingLot::getCreatedAt);
+        
+        return this.page(page, queryWrapper);
+    }
 }

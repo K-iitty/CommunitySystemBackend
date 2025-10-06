@@ -47,6 +47,33 @@ public class MeterConfigController {
     }
 
     /**
+     * 根据分类名称或仪表类型或状态分页查询仪表配置信息
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页大小
+     * @param categoryName 分类名称
+     * @param meterType 仪表类型
+     * @param status 状态
+     * @return 仪表配置信息分页数据
+     */
+    @GetMapping("/search")
+    @Operation(summary = "根据分类名称或仪表类型或状态分页查询仪表配置信息", description = "根据分类名称或仪表类型或状态分页查询仪表配置信息")
+    @ApiOperationSupport(order = 1, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize,
+                                   @Parameter(description = "分类名称") @RequestParam(required = false) String categoryName,
+                                   @Parameter(description = "仪表类型") @RequestParam(required = false) String meterType,
+                                   @Parameter(description = "状态") @RequestParam(required = false) String status) {
+        IPage<MeterConfig> page = new Page<>(pageNum, pageSize);
+        IPage<MeterConfig> result = meterConfigService.selectMeterConfigPageByMultiple(page, categoryName, meterType, status);
+        return Result.ok().put("data", result.getRecords())
+                .put("total", result.getTotal())
+                .put("pageNum", result.getCurrent())
+                .put("pageSize", result.getSize());
+    }
+
+    /**
      * 根据ID查询仪表配置信息
      *
      * @param id 仪表配置ID

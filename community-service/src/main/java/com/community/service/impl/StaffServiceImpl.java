@@ -61,4 +61,34 @@ public class StaffServiceImpl extends ServiceImpl<StaffDao, Staff> implements St
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<Staff> selectStaffPageByMultiple(IPage<Staff> page, String name, String phone, String workNo, String workStatus) {
+        LambdaQueryWrapper<Staff> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据姓名模糊查询
+        if (StringUtils.isNotBlank(name)) {
+            queryWrapper.like(Staff::getName, name);
+        }
+        
+        // 根据手机号查询
+        if (StringUtils.isNotBlank(phone)) {
+            queryWrapper.eq(Staff::getPhone, phone);
+        }
+        
+        // 根据工号查询
+        if (StringUtils.isNotBlank(workNo)) {
+            queryWrapper.eq(Staff::getWorkNo, workNo);
+        }
+        
+        // 根据工作状态查询
+        if (StringUtils.isNotBlank(workStatus)) {
+            queryWrapper.eq(Staff::getWorkStatus, workStatus);
+        }
+        
+        // 默认按创建时间倒序排列
+        queryWrapper.orderByDesc(Staff::getCreatedAt);
+        
+        return this.page(page, queryWrapper);
+    }
 }

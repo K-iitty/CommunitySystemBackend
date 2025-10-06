@@ -46,4 +46,19 @@ public class SmartQaKnowledgeServiceImpl extends ServiceImpl<SmartQaKnowledgeDao
         
         return this.page(page, queryWrapper);
     }
+
+    @Override
+    public IPage<SmartQaKnowledge> selectSmartQaKnowledgePageByMultiple(IPage<SmartQaKnowledge> page, String title) {
+        LambdaQueryWrapper<SmartQaKnowledge> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 根据标题模糊查询
+        if (StringUtils.isNotBlank(title)) {
+            queryWrapper.like(SmartQaKnowledge::getTitle, title);
+        }
+        
+        // 默认按创建时间倒序排列
+        queryWrapper.orderByDesc(SmartQaKnowledge::getCreatedAt);
+        
+        return this.page(page, queryWrapper);
+    }
 }

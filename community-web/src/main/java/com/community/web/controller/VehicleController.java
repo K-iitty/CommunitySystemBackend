@@ -50,6 +50,31 @@ public class VehicleController {
     }
 
     /**
+     * 根据车牌号或车主ID分页查询车辆信息
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页大小
+     * @param plateNumber 车牌号
+     * @param ownerId 车主ID
+     * @return 车辆信息分页数据
+     */
+    @GetMapping("/search")
+    @Operation(summary = "根据车牌号或车主ID分页查询车辆信息", description = "根据车牌号或车主ID分页查询车辆信息")
+    @ApiOperationSupport(order = 1, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize,
+                                   @Parameter(description = "车牌号") @RequestParam(required = false) String plateNumber,
+                                   @Parameter(description = "车主ID") @RequestParam(required = false) Long ownerId) {
+        IPage<Vehicle> page = new Page<>(pageNum, pageSize);
+        IPage<Vehicle> result = vehicleService.selectVehiclePageByMultiple(page, plateNumber, ownerId);
+        return Result.ok().put("data", result.getRecords())
+                .put("total", result.getTotal())
+                .put("pageNum", result.getCurrent())
+                .put("pageSize", result.getSize());
+    }
+
+    /**
      * 根据ID查询车辆信息
      *
      * @param id 车辆ID
