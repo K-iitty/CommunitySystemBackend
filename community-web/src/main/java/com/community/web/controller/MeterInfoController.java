@@ -47,6 +47,46 @@ public class MeterInfoController {
     }
 
     /**
+     * 根据仪表编码或仪表名称或位置类型或仪表状态分页查询仪表信息
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页大小
+     * @param meterCode 仪表编码
+     * @param meterName 仪表名称
+     * @param locationType 位置类型
+     * @param meterStatus 仪表状态
+     * @return 仪表信息分页数据
+     */
+    @GetMapping("/search")
+    @Operation(
+        summary = "根据仪表编码或仪表名称或位置类型或仪表状态分页查询仪表信息",
+        description = "根据仪表编码或仪表名称或位置类型或仪表状态分页查询仪表信息",
+        parameters = {
+            @Parameter(name = "pageNum", description = "当前页码", example = "1"),
+            @Parameter(name = "pageSize", description = "每页大小", example = "10"),
+            @Parameter(name = "meterCode", description = "仪表编码"),
+            @Parameter(name = "meterName", description = "仪表名称"),
+            @Parameter(name = "locationType", description = "位置类型"),
+            @Parameter(name = "meterStatus", description = "仪表状态")
+        }
+    )
+    @ApiOperationSupport(order = 1, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize,
+                                   @Parameter(description = "仪表编码") @RequestParam(required = false) String meterCode,
+                                   @Parameter(description = "仪表名称") @RequestParam(required = false) String meterName,
+                                   @Parameter(description = "位置类型") @RequestParam(required = false) String locationType,
+                                   @Parameter(description = "仪表状态") @RequestParam(required = false) String meterStatus) {
+        IPage<MeterInfo> page = new Page<>(pageNum, pageSize);
+        IPage<MeterInfo> result = meterInfoService.selectMeterInfoPageByMultiple(page, meterCode, meterName, locationType, meterStatus);
+        return Result.ok().put("data", result.getRecords())
+                .put("total", result.getTotal())
+                .put("pageNum", result.getCurrent())
+                .put("pageSize", result.getSize());
+    }
+
+    /**
      * 根据ID查询仪表信息
      *
      * @param id 仪表信息ID

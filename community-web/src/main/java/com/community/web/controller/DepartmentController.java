@@ -49,6 +49,43 @@ public class DepartmentController {
     }
 
     /**
+     * 根据部门名称或部门编码或状态分页查询部门信息
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页大小
+     * @param departmentName 部门名称
+     * @param departmentCode 部门编码
+     * @param status 状态
+     * @return 部门信息分页数据
+     */
+    @GetMapping("/search")
+    @Operation(
+        summary = "根据部门名称或部门编码或状态分页查询部门信息",
+        description = "根据部门名称或部门编码或状态分页查询部门信息",
+        parameters = {
+            @Parameter(name = "pageNum", description = "当前页码", example = "1"),
+            @Parameter(name = "pageSize", description = "每页大小", example = "10"),
+            @Parameter(name = "departmentName", description = "部门名称"),
+            @Parameter(name = "departmentCode", description = "部门编码"),
+            @Parameter(name = "status", description = "状态")
+        }
+    )
+    @ApiOperationSupport(order = 1, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize,
+                                   @Parameter(description = "部门名称") @RequestParam(required = false) String departmentName,
+                                   @Parameter(description = "部门编码") @RequestParam(required = false) String departmentCode,
+                                   @Parameter(description = "状态") @RequestParam(required = false) String status) {
+        IPage<Department> page = new Page<>(pageNum, pageSize);
+        IPage<Department> result = departmentService.selectDepartmentPageByMultiple(page, departmentName, departmentCode, status);
+        return Result.ok().put("data", result.getRecords())
+                .put("total", result.getTotal())
+                .put("pageNum", result.getCurrent())
+                .put("pageSize", result.getSize());
+    }
+
+    /**
      * 根据ID查询部门信息
      *
      * @param id 部门ID

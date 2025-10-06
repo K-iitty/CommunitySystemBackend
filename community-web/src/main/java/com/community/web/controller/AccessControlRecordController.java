@@ -57,7 +57,18 @@ public class AccessControlRecordController {
      * @return 门禁记录信息分页数据
      */
     @GetMapping("/search")
-    @Operation(summary = "根据设备ID或人员姓名或通行方式或验证结果分页查询门禁记录信息", description = "根据设备ID或人员姓名或通行方式或验证结果分页查询门禁记录信息")
+    @Operation(
+        summary = "根据设备ID或人员姓名或通行方式或验证结果分页查询门禁记录信息", 
+        description = "根据设备ID或人员姓名或通行方式或验证结果分页查询门禁记录信息",
+        parameters = {
+            @Parameter(name = "pageNum", description = "当前页码", example = "1"),
+            @Parameter(name = "pageSize", description = "每页大小", example = "10"),
+            @Parameter(name = "deviceId", description = "设备ID"),
+            @Parameter(name = "personName", description = "人员姓名"),
+            @Parameter(name = "accessMethod", description = "通行方式"),
+            @Parameter(name = "verifyResult", description = "验证结果")
+        }
+    )
     @ApiOperationSupport(order = 1, author = "开发团队")
     @SecurityRequirement(name = "Authorization")
     public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,

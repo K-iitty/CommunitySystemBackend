@@ -58,7 +58,16 @@ public class  AccessControlDeviceController {
      * @return 门禁设备信息分页数据
      */
     @GetMapping("/search")
-    @Operation(summary = "根据设备名称或设备编码分页查询门禁设备信息", description = "根据设备名称或设备编码分页查询门禁设备信息")
+    @Operation(
+        summary = "根据设备名称或设备编码分页查询门禁设备信息", 
+        description = "根据设备名称或设备编码分页查询门禁设备信息",
+        parameters = {
+            @Parameter(name = "pageNum", description = "当前页码", example = "1"),
+            @Parameter(name = "pageSize", description = "每页大小", example = "10"),
+            @Parameter(name = "deviceName", description = "设备名称"),
+            @Parameter(name = "deviceCode", description = "设备编码")
+        }
+    )
     @ApiOperationSupport(order = 1, author = "开发团队")
     @SecurityRequirement(name = "Authorization")
     public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,

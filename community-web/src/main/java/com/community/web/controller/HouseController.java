@@ -61,7 +61,16 @@ public class HouseController {
      * @return 房屋信息分页数据
      */
     @GetMapping("/search")
-    @Operation(summary = "根据房屋编码或房号分页查询房屋信息", description = "根据房屋编码或房号分页查询房屋信息")
+    @Operation(
+        summary = "根据房屋编码或房号分页查询房屋信息", 
+        description = "根据房屋编码或房号分页查询房屋信息",
+        parameters = {
+            @Parameter(name = "pageNum", description = "当前页码", example = "1"),
+            @Parameter(name = "pageSize", description = "每页大小", example = "10"),
+            @Parameter(name = "houseCode", description = "房屋编码"),
+            @Parameter(name = "roomNo", description = "房号")
+        }
+    )
     @ApiOperationSupport(order = 1, author = "开发团队")
     @SecurityRequirement(name = "Authorization")
     public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,

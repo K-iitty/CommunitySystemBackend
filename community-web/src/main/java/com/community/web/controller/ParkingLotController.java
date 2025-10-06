@@ -61,7 +61,16 @@ public class ParkingLotController {
      * @return 停车场信息分页数据
      */
     @GetMapping("/search")
-    @Operation(summary = "根据停车场名称或停车场编码分页查询停车场信息", description = "根据停车场名称或停车场编码分页查询停车场信息")
+    @Operation(
+        summary = "根据停车场名称或停车场编码分页查询停车场信息", 
+        description = "根据停车场名称或停车场编码分页查询停车场信息",
+        parameters = {
+            @Parameter(name = "pageNum", description = "当前页码", example = "1"),
+            @Parameter(name = "pageSize", description = "每页大小", example = "10"),
+            @Parameter(name = "lotName", description = "停车场名称"),
+            @Parameter(name = "lotCode", description = "停车场编码")
+        }
+    )
     @ApiOperationSupport(order = 1, author = "开发团队")
     @SecurityRequirement(name = "Authorization")
     public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,

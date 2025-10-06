@@ -61,7 +61,16 @@ public class CommunityInfoController {
      * @return 社区信息分页数据
      */
     @GetMapping("/search")
-    @Operation(summary = "根据社区名称或详细地址分页查询社区信息", description = "根据社区名称或详细地址分页查询社区信息")
+    @Operation(
+        summary = "根据社区名称或详细地址分页查询社区信息", 
+        description = "根据社区名称或详细地址分页查询社区信息",
+        parameters = {
+            @Parameter(name = "pageNum", description = "当前页码", example = "1"),
+            @Parameter(name = "pageSize", description = "每页大小", example = "10"),
+            @Parameter(name = "communityName", description = "社区名称"),
+            @Parameter(name = "detailAddress", description = "详细地址")
+        }
+    )
     @ApiOperationSupport(order = 1, author = "开发团队")
     @SecurityRequirement(name = "Authorization")
     public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,

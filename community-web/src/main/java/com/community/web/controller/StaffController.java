@@ -47,6 +47,46 @@ public class StaffController {
     }
 
     /**
+     * 根据员工姓名或手机号或工号或工作状态分页查询员工信息
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页大小
+     * @param name 员工姓名
+     * @param phone 手机号
+     * @param workNo 工号
+     * @param workStatus 工作状态
+     * @return 员工信息分页数据
+     */
+    @GetMapping("/search")
+    @Operation(
+        summary = "根据员工姓名或手机号或工号或工作状态分页查询员工信息",
+        description = "根据员工姓名或手机号或工号或工作状态分页查询员工信息",
+        parameters = {
+            @Parameter(name = "pageNum", description = "当前页码", example = "1"),
+            @Parameter(name = "pageSize", description = "每页大小", example = "10"),
+            @Parameter(name = "name", description = "员工姓名"),
+            @Parameter(name = "phone", description = "手机号"),
+            @Parameter(name = "workNo", description = "工号"),
+            @Parameter(name = "workStatus", description = "工作状态")
+        }
+    )
+    @ApiOperationSupport(order = 1, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize,
+                                   @Parameter(description = "员工姓名") @RequestParam(required = false) String name,
+                                   @Parameter(description = "手机号") @RequestParam(required = false) String phone,
+                                   @Parameter(description = "工号") @RequestParam(required = false) String workNo,
+                                   @Parameter(description = "工作状态") @RequestParam(required = false) String workStatus) {
+        IPage<Staff> page = new Page<>(pageNum, pageSize);
+        IPage<Staff> result = staffService.selectStaffPageByMultiple(page, name, phone, workNo, workStatus);
+        return Result.ok().put("data", result.getRecords())
+                .put("total", result.getTotal())
+                .put("pageNum", result.getCurrent())
+                .put("pageSize", result.getSize());
+    }
+
+    /**
      * 根据ID查询员工信息
      *
      * @param id 员工ID

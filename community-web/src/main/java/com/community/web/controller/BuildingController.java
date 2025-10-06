@@ -61,7 +61,16 @@ public class BuildingController {
      * @return 楼栋信息分页数据
      */
     @GetMapping("/search")
-    @Operation(summary = "根据楼栋名称或楼栋编号分页查询楼栋信息", description = "根据楼栋名称或楼栋编号分页查询楼栋信息")
+    @Operation(
+        summary = "根据楼栋名称或楼栋编号分页查询楼栋信息", 
+        description = "根据楼栋名称或楼栋编号分页查询楼栋信息",
+        parameters = {
+            @Parameter(name = "pageNum", description = "当前页码", example = "1"),
+            @Parameter(name = "pageSize", description = "每页大小", example = "10"),
+            @Parameter(name = "buildingName", description = "楼栋名称"),
+            @Parameter(name = "buildingNo", description = "楼栋编号")
+        }
+    )
     @ApiOperationSupport(order = 1, author = "开发团队")
     @SecurityRequirement(name = "Authorization")
     public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,

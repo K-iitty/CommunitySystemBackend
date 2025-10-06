@@ -47,6 +47,46 @@ public class MeterReadingController {
     }
 
     /**
+     * 根据仪表ID或抄表人或抄表类型或抄表状态分页查询抄表记录
+     *
+     * @param pageNum  当前页码
+     * @param pageSize 每页大小
+     * @param meterId 仪表ID
+     * @param readerName 抄表人
+     * @param readingType 抄表类型
+     * @param readingStatus 抄表状态
+     * @return 抄表记录分页数据
+     */
+    @GetMapping("/search")
+    @Operation(
+        summary = "根据仪表ID或抄表人或抄表类型或抄表状态分页查询抄表记录",
+        description = "根据仪表ID或抄表人或抄表类型或抄表状态分页查询抄表记录",
+        parameters = {
+            @Parameter(name = "pageNum", description = "当前页码", example = "1"),
+            @Parameter(name = "pageSize", description = "每页大小", example = "10"),
+            @Parameter(name = "meterId", description = "仪表ID"),
+            @Parameter(name = "readerName", description = "抄表人"),
+            @Parameter(name = "readingType", description = "抄表类型"),
+            @Parameter(name = "readingStatus", description = "抄表状态")
+        }
+    )
+    @ApiOperationSupport(order = 1, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize,
+                                   @Parameter(description = "仪表ID") @RequestParam(required = false) Long meterId,
+                                   @Parameter(description = "抄表人") @RequestParam(required = false) String readerName,
+                                   @Parameter(description = "抄表类型") @RequestParam(required = false) String readingType,
+                                   @Parameter(description = "抄表状态") @RequestParam(required = false) String readingStatus) {
+        IPage<MeterReading> page = new Page<>(pageNum, pageSize);
+        IPage<MeterReading> result = meterReadingService.selectMeterReadingPageByMultiple(page, meterId, readerName, readingType, readingStatus);
+        return Result.ok().put("data", result.getRecords())
+                .put("total", result.getTotal())
+                .put("pageNum", result.getCurrent())
+                .put("pageSize", result.getSize());
+    }
+
+    /**
      * 根据ID查询抄表记录
      *
      * @param id 抄表记录ID

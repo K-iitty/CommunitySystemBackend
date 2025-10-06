@@ -59,7 +59,16 @@ public class VehicleController {
      * @return 车辆信息分页数据
      */
     @GetMapping("/search")
-    @Operation(summary = "根据车牌号或车主ID分页查询车辆信息", description = "根据车牌号或车主ID分页查询车辆信息")
+    @Operation(
+        summary = "根据车牌号或车主ID分页查询车辆信息", 
+        description = "根据车牌号或车主ID分页查询车辆信息",
+        parameters = {
+            @Parameter(name = "pageNum", description = "当前页码", example = "1"),
+            @Parameter(name = "pageSize", description = "每页大小", example = "10"),
+            @Parameter(name = "plateNumber", description = "车牌号"),
+            @Parameter(name = "ownerId", description = "车主ID")
+        }
+    )
     @ApiOperationSupport(order = 1, author = "开发团队")
     @SecurityRequirement(name = "Authorization")
     public Result searchByMultiple(@Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer pageNum,
