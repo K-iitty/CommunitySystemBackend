@@ -96,12 +96,6 @@ public class SmartQaKnowledge {
     private Long createdBy;
     
     /**
-     * 备注
-     */
-    @TableField("remark")
-    private String remark;
-    
-    /**
      * 创建时间
      */
     @TableField(value = "created_at", fill = FieldFill.INSERT)

@@ -29,6 +29,11 @@ spring:
       port: 6379
       password: sheep14
       database: 0
+      
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
     
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
@@ -74,6 +79,10 @@ knife4j:
 jwt:
   secret: communitySystemSecretKeyForJWTTokenGenerationAndValidation
   expiration: 86400000
+
+# 文件上传配置
+file:
+  upload-path: uploads/knowledge
 
 # Druid监控配置
 management:
