@@ -1,23 +1,23 @@
 package com.community.domain.vo;
 
-import com.community.domain.entity.ParkingLot;
+import com.community.domain.entity.Building;
 import com.community.domain.entity.CommunityInfo;
 import lombok.Data;
 
 import java.io.Serializable;
 
 /**
- * 停车场详细信息VO类
+ * 楼栋详细信息VO类
  */
 @Data
-public class ParkingLotDetailVO implements Serializable {
+public class BuildingDetailVO implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
     /**
-     * 停车场信息
+     * 楼栋信息
      */
-    private ParkingLot parkingLot;
+    private Building building;
     
     /**
      * 社区信息

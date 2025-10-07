@@ -3,9 +3,7 @@ package com.community.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.community.dao.*;
 import com.community.domain.entity.*;
-import com.community.domain.vo.OwnerParkingInfoVO;
-import com.community.domain.vo.ParkingSpaceDetailVO;
-import com.community.domain.vo.ParkingLotDetailVO;
+import com.community.domain.vo.*;
 import com.community.service.ComplexBusinessService;
 import com.community.service.OwnerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +59,24 @@ public class ComplexBusinessServiceImpl implements ComplexBusinessService {
     
     @Autowired
     private ParkingLotDao parkingLotDao;
+    
+    @Autowired
+    private MeterConfigDao meterConfigDao;
+    
+    @Autowired
+    private ParkingRecordDao parkingRecordDao;
+    
+    @Autowired
+    private AccessControlDeviceDao accessControlDeviceDao;
+    
+    @Autowired
+    private AccessControlRecordDao accessControlRecordDao;
+    
+    @Autowired
+    private IssueFollowUpDao issueFollowUpDao;
+    
+    @Autowired
+    private SystemAdminDao systemAdminDao;
     
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -246,6 +262,425 @@ public class ComplexBusinessServiceImpl implements ComplexBusinessService {
         if (parkingLot != null && parkingLot.getCommunityId() != null) {
             CommunityInfo communityInfo = communityInfoDao.selectById(parkingLot.getCommunityId());
             vo.setCommunityInfo(communityInfo);
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public OwnerMeterVO getMeterInfoByOwnerId(Long ownerId) {
+        OwnerMeterVO vo = new OwnerMeterVO();
+        
+        // 获取业主关联的房屋信息
+        LambdaQueryWrapper<HouseOwner> houseOwnerWrapper = new LambdaQueryWrapper<>();
+        houseOwnerWrapper.eq(HouseOwner::getOwnerId, ownerId);
+        List<HouseOwner> houseOwners = houseOwnerDao.selectList(houseOwnerWrapper);
+        
+        // 获取房屋关联的仪表信息
+        if (!houseOwners.isEmpty()) {
+            List<Long> houseIds = houseOwners.stream().map(HouseOwner::getHouseId).toList();
+            LambdaQueryWrapper<MeterInfo> meterWrapper = new LambdaQueryWrapper<>();
+            meterWrapper.in(MeterInfo::getHouseId, houseIds);
+            List<MeterInfo> meters = meterInfoDao.selectList(meterWrapper);
+            vo.setMeters(meters);
+            
+            // 获取仪表配置信息
+            if (!meters.isEmpty()) {
+                List<Long> configIds = meters.stream().map(MeterInfo::getConfigId).toList();
+                LambdaQueryWrapper<MeterConfig> configWrapper = new LambdaQueryWrapper<>();
+                configWrapper.in(MeterConfig::getId, configIds);
+                List<MeterConfig> meterConfigs = meterConfigDao.selectList(configWrapper);
+                vo.setMeterConfigs(meterConfigs);
+            }
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public MeterReadingDetailVO getMeterReadingDetailById(Long readingId) {
+        MeterReadingDetailVO vo = new MeterReadingDetailVO();
+        
+        // 获取抄表记录信息
+        MeterReading meterReading = meterReadingDao.selectById(readingId);
+        vo.setMeterReading(meterReading);
+        
+        // 获取抄表员信息（物业人员）
+        if (meterReading != null && meterReading.getReaderId() != null) {
+            Staff staff = staffDao.selectById(meterReading.getReaderId());
+            vo.setStaff(staff);
+        }
+        
+        // 获取仪表信息
+        if (meterReading != null && meterReading.getMeterId() != null) {
+            MeterInfo meterInfo = meterInfoDao.selectById(meterReading.getMeterId());
+            // 获取业主信息
+            if (meterInfo != null && meterInfo.getHouseId() != null) {
+                LambdaQueryWrapper<HouseOwner> houseOwnerWrapper = new LambdaQueryWrapper<>();
+                houseOwnerWrapper.eq(HouseOwner::getHouseId, meterInfo.getHouseId());
+                List<HouseOwner> houseOwners = houseOwnerDao.selectList(houseOwnerWrapper);
+                if (!houseOwners.isEmpty()) {
+                    Owner owner = ownerDao.selectById(houseOwners.get(0).getOwnerId());
+                    vo.setOwner(owner);
+                }
+            }
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public MeterDetailVO getMeterDetailByMeterId(Long meterId) {
+        MeterDetailVO vo = new MeterDetailVO();
+        
+        // 获取仪表信息
+        MeterInfo meterInfo = meterInfoDao.selectById(meterId);
+        vo.setMeterInfo(meterInfo);
+        
+        // 获取仪表配置信息
+        if (meterInfo != null && meterInfo.getConfigId() != null) {
+            MeterConfig meterConfig = meterConfigDao.selectById(meterInfo.getConfigId());
+            vo.setMeterConfig(meterConfig);
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public BuildingDetailVO getBuildingDetailById(Long buildingId) {
+        BuildingDetailVO vo = new BuildingDetailVO();
+        
+        // 获取楼栋信息
+        Building building = buildingDao.selectById(buildingId);
+        vo.setBuilding(building);
+        
+        // 获取社区信息
+        if (building != null && building.getCommunityId() != null) {
+            CommunityInfo communityInfo = communityInfoDao.selectById(building.getCommunityId());
+            vo.setCommunityInfo(communityInfo);
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public HouseDetailVO getHouseDetailById(Long houseId) {
+        HouseDetailVO vo = new HouseDetailVO();
+        
+        // 获取房屋信息
+        House house = houseDao.selectById(houseId);
+        vo.setHouse(house);
+        
+        // 获取楼栋信息
+        if (house != null && house.getBuildingId() != null) {
+            Building building = buildingDao.selectById(house.getBuildingId());
+            vo.setBuilding(building);
+            
+            // 获取社区信息
+            if (building != null && building.getCommunityId() != null) {
+                CommunityInfo communityInfo = communityInfoDao.selectById(building.getCommunityId());
+                vo.setCommunityInfo(communityInfo);
+            }
+        }
+        
+        return vo;
+    }
+    
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean addHouseOwnerRelation(Long ownerId, Long houseId) {
+        HouseOwner houseOwner = new HouseOwner();
+        houseOwner.setOwnerId(ownerId);
+        houseOwner.setHouseId(houseId);
+        houseOwner.setRelationship("业主");
+        houseOwner.setStatus("正常");
+        houseOwner.setIsPrimary(1);
+        return houseOwnerDao.insert(houseOwner) > 0;
+    }
+    
+    @Override
+    public ParkingLotDetailVO getParkingLotDetailWithCommunityById(Long parkingLotId) {
+        return getParkingLotDetailById(parkingLotId);
+    }
+    
+    @Override
+    public ParkingSpaceDetailVO getParkingSpaceDetailWithLotById(Long spaceId) {
+        return getParkingSpaceDetailById(spaceId);
+    }
+    
+    @Override
+    public VehicleDetailVO getVehicleDetailById(Long vehicleId) {
+        VehicleDetailVO vo = new VehicleDetailVO();
+        
+        // 获取车辆信息
+        Vehicle vehicle = vehicleDao.selectById(vehicleId);
+        vo.setVehicle(vehicle);
+        
+        // 获取业主信息
+        if (vehicle != null && vehicle.getOwnerId() != null) {
+            Owner owner = ownerDao.selectById(vehicle.getOwnerId());
+            vo.setOwner(owner);
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public ParkingRecordDetailVO getParkingRecordDetailById(Long recordId) {
+        ParkingRecordDetailVO vo = new ParkingRecordDetailVO();
+        
+        // 获取停车记录信息
+        ParkingRecord parkingRecord = parkingRecordDao.selectById(recordId);
+        vo.setParkingRecord(parkingRecord);
+        
+        // 获取车辆信息
+        if (parkingRecord != null && parkingRecord.getVehicleId() != null) {
+            Vehicle vehicle = vehicleDao.selectById(parkingRecord.getVehicleId());
+            vo.setVehicle(vehicle);
+            
+            // 获取业主信息
+            if (vehicle != null && vehicle.getOwnerId() != null) {
+                Owner owner = ownerDao.selectById(vehicle.getOwnerId());
+                vo.setOwner(owner);
+            }
+        }
+        
+        // 获取车位信息
+        if (parkingRecord != null && parkingRecord.getParkingSpaceId() != null) {
+            ParkingSpace parkingSpace = parkingSpaceDao.selectById(parkingRecord.getParkingSpaceId());
+            vo.setParkingSpace(parkingSpace);
+            
+            // 获取停车场信息
+            if (parkingSpace != null && parkingSpace.getParkingLotId() != null) {
+                ParkingLot parkingLot = parkingLotDao.selectById(parkingSpace.getParkingLotId());
+                vo.setParkingLot(parkingLot);
+            }
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public AccessControlDeviceDetailVO getAccessControlDeviceDetailById(Long deviceId) {
+        AccessControlDeviceDetailVO vo = new AccessControlDeviceDetailVO();
+        
+        // 获取门禁设备信息
+        AccessControlDevice accessControlDevice = accessControlDeviceDao.selectById(deviceId);
+        vo.setAccessControlDevice(accessControlDevice);
+        
+        // 获取楼栋信息
+        if (accessControlDevice != null && accessControlDevice.getBuildingId() != null) {
+            Building building = buildingDao.selectById(accessControlDevice.getBuildingId());
+            vo.setBuilding(building);
+            
+            // 获取社区信息
+            if (building != null && building.getCommunityId() != null) {
+                CommunityInfo communityInfo = communityInfoDao.selectById(building.getCommunityId());
+                vo.setCommunityInfo(communityInfo);
+            }
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public AccessControlRecordDetailVO getAccessControlRecordDetailById(Long recordId) {
+        AccessControlRecordDetailVO vo = new AccessControlRecordDetailVO();
+        
+        // 获取门禁记录信息
+        AccessControlRecord accessControlRecord = accessControlRecordDao.selectById(recordId);
+        vo.setAccessControlRecord(accessControlRecord);
+        
+        // 获取门禁设备信息
+        if (accessControlRecord != null && accessControlRecord.getDeviceId() != null) {
+            AccessControlDevice accessControlDevice = accessControlDeviceDao.selectById(accessControlRecord.getDeviceId());
+            vo.setAccessControlDevice(accessControlDevice);
+        }
+        
+        // 获取人员信息
+        if (accessControlRecord != null) {
+            vo.setPersonType(accessControlRecord.getPersonType());
+            if ("owner".equals(accessControlRecord.getPersonType()) && accessControlRecord.getPersonId() != null) {
+                Owner owner = ownerDao.selectById(accessControlRecord.getPersonId());
+                vo.setPerson(owner);
+            } else if ("staff".equals(accessControlRecord.getPersonType()) && accessControlRecord.getPersonId() != null) {
+                Staff staff = staffDao.selectById(accessControlRecord.getPersonId());
+                vo.setPerson(staff);
+            }
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public MeterInfoDetailVO getMeterInfoDetailById(Long meterId) {
+        MeterInfoDetailVO vo = new MeterInfoDetailVO();
+        
+        // 获取仪表信息
+        MeterInfo meterInfo = meterInfoDao.selectById(meterId);
+        vo.setMeterInfo(meterInfo);
+        
+        // 获取仪表配置信息
+        if (meterInfo != null && meterInfo.getConfigId() != null) {
+            MeterConfig meterConfig = meterConfigDao.selectById(meterInfo.getConfigId());
+            vo.setMeterConfig(meterConfig);
+        }
+        
+        // 获取房屋信息
+        if (meterInfo != null && meterInfo.getHouseId() != null) {
+            House house = houseDao.selectById(meterInfo.getHouseId());
+            vo.setHouse(house);
+            
+            // 获取楼栋信息
+            if (house != null && house.getBuildingId() != null) {
+                Building building = buildingDao.selectById(house.getBuildingId());
+                vo.setBuilding(building);
+            }
+        } else if (meterInfo != null && meterInfo.getBuildingId() != null) {
+            // 获取楼栋信息
+            Building building = buildingDao.selectById(meterInfo.getBuildingId());
+            vo.setBuilding(building);
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public MeterReadingDetailVO getMeterReadingAndMeterInfoById(Long readingId) {
+        return getMeterReadingDetailById(readingId);
+    }
+    
+    @Override
+    public StaffDetailVO getStaffDetailById(Long staffId) {
+        StaffDetailVO vo = new StaffDetailVO();
+        
+        // 获取员工信息
+        Staff staff = staffDao.selectById(staffId);
+        vo.setStaff(staff);
+        
+        // 获取部门信息
+        if (staff != null && staff.getDepartmentId() != null) {
+            Department department = departmentDao.selectById(staff.getDepartmentId());
+            vo.setDepartment(department);
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public OwnerDetailVO getOwnerDetailById(Long ownerId) {
+        OwnerDetailVO vo = new OwnerDetailVO();
+        
+        // 获取业主基本信息
+        Owner owner = ownerDao.selectById(ownerId);
+        vo.setOwner(owner);
+        
+        // 获取房屋拥有信息
+        LambdaQueryWrapper<HouseOwner> houseOwnerWrapper = new LambdaQueryWrapper<>();
+        houseOwnerWrapper.eq(HouseOwner::getOwnerId, ownerId);
+        List<HouseOwner> houseOwners = houseOwnerDao.selectList(houseOwnerWrapper);
+        vo.setHouseOwners(houseOwners);
+        
+        // 获取房屋信息
+        if (!houseOwners.isEmpty()) {
+            List<Long> houseIds = houseOwners.stream().map(HouseOwner::getHouseId).toList();
+            LambdaQueryWrapper<House> houseWrapper = new LambdaQueryWrapper<>();
+            houseWrapper.in(House::getId, houseIds);
+            List<House> houses = houseDao.selectList(houseWrapper);
+            vo.setHouses(houses);
+        }
+        
+        // 获取车位所属信息
+        LambdaQueryWrapper<ParkingSpace> parkingSpaceWrapper = new LambdaQueryWrapper<>();
+        parkingSpaceWrapper.eq(ParkingSpace::getOwnerId, ownerId);
+        List<ParkingSpace> parkingSpaces = parkingSpaceDao.selectList(parkingSpaceWrapper);
+        vo.setParkingSpaces(parkingSpaces);
+        
+        // 获取车辆所属信息
+        LambdaQueryWrapper<Vehicle> vehicleWrapper = new LambdaQueryWrapper<>();
+        vehicleWrapper.eq(Vehicle::getOwnerId, ownerId);
+        List<Vehicle> vehicles = vehicleDao.selectList(vehicleWrapper);
+        vo.setVehicles(vehicles);
+        
+        return vo;
+    }
+    
+    @Override
+    public CommunityNoticeDetailVO getCommunityNoticeDetailById(Long noticeId) {
+        CommunityNoticeDetailVO vo = new CommunityNoticeDetailVO();
+        
+        // 获取社区公告信息
+        CommunityNotice communityNotice = communityNoticeDao.selectById(noticeId);
+        vo.setCommunityNotice(communityNotice);
+        
+        // 获取社区信息
+        if (communityNotice != null && communityNotice.getCommunityId() != null) {
+            CommunityInfo communityInfo = communityInfoDao.selectById(communityNotice.getCommunityId());
+            vo.setCommunityInfo(communityInfo);
+        }
+        
+        // 获取发布人信息
+        if (communityNotice != null && communityNotice.getCreatedBy() != null) {
+            SystemAdmin publisher = systemAdminDao.selectById(communityNotice.getCreatedBy());
+            vo.setPublisher(publisher);
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public OwnerIssueDetailVO getOwnerIssueDetailById(Long issueId) {
+        OwnerIssueDetailVO vo = new OwnerIssueDetailVO();
+        
+        // 获取业主问题信息
+        OwnerIssue ownerIssue = ownerIssueDao.selectById(issueId);
+        vo.setOwnerIssue(ownerIssue);
+        
+        // 获取业主信息
+        if (ownerIssue != null && ownerIssue.getOwnerId() != null) {
+            Owner owner = ownerDao.selectById(ownerIssue.getOwnerId());
+            vo.setOwner(owner);
+        }
+        
+        // 获取房屋信息
+        if (ownerIssue != null && ownerIssue.getHouseId() != null) {
+            House house = houseDao.selectById(ownerIssue.getHouseId());
+            vo.setHouse(house);
+            
+            // 获取社区信息
+            if (house != null && house.getCommunityId() != null) {
+                CommunityInfo communityInfo = communityInfoDao.selectById(house.getCommunityId());
+                vo.setCommunityInfo(communityInfo);
+            }
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public IssueFollowUpDetailVO getIssueFollowUpDetailById(Long followUpId) {
+        IssueFollowUpDetailVO vo = new IssueFollowUpDetailVO();
+        
+        // 获取问题跟进信息
+        IssueFollowUp issueFollowUp = issueFollowUpDao.selectById(followUpId);
+        vo.setIssueFollowUp(issueFollowUp);
+        
+        // 获取问题信息
+        if (issueFollowUp != null && issueFollowUp.getIssueId() != null) {
+            OwnerIssue ownerIssue = ownerIssueDao.selectById(issueFollowUp.getIssueId());
+            vo.setOwnerIssue(ownerIssue);
+            
+            // 获取业主信息
+            if (ownerIssue != null && ownerIssue.getOwnerId() != null) {
+                Owner owner = ownerDao.selectById(ownerIssue.getOwnerId());
+                vo.setOwner(owner);
+            }
+        }
+        
+        // 获取跟进人信息（物业）
+        if (issueFollowUp != null && "staff".equals(issueFollowUp.getOperatorType()) && issueFollowUp.getOperatorId() != null) {
+            Staff staff = staffDao.selectById(issueFollowUp.getOperatorId());
+            vo.setStaff(staff);
         }
         
         return vo;

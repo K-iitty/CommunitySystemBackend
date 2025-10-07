@@ -7,7 +7,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 车位详细信息VO类（包含停车场信息）
+ * 车位详细信息VO类
  */
 @Data
 public class ParkingSpaceDetailVO implements Serializable {
