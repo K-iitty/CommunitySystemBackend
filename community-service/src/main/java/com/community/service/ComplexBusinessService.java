@@ -1,5 +1,9 @@
 package com.community.service;
 
+import com.community.domain.vo.OwnerParkingInfoVO;
+import com.community.domain.vo.ParkingSpaceDetailVO;
+import com.community.domain.vo.ParkingLotDetailVO;
+
 public interface ComplexBusinessService {
     
     /**
@@ -107,4 +111,25 @@ public interface ComplexBusinessService {
      * @return 是否成功
      */
     boolean assignIssueToStaff(Long issueId, Long staffId);
+    
+    /**
+     * 根据业主ID查询车位和车辆信息
+     * @param ownerId 业主ID
+     * @return 业主停车信息
+     */
+    OwnerParkingInfoVO getParkingInfoByOwnerId(Long ownerId);
+    
+    /**
+     * 根据车位ID查询车位和停车场详细信息
+     * @param parkingSpaceId 车位ID
+     * @return 车位详细信息
+     */
+    ParkingSpaceDetailVO getParkingSpaceDetailById(Long parkingSpaceId);
+    
+    /**
+     * 根据停车场ID查询停车场和社区详细信息
+     * @param parkingLotId 停车场ID
+     * @return 停车场详细信息
+     */
+    ParkingLotDetailVO getParkingLotDetailById(Long parkingLotId);
 }

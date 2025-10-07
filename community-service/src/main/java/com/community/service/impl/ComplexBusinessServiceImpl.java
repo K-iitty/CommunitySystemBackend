@@ -3,11 +3,16 @@ package com.community.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.community.dao.*;
 import com.community.domain.entity.*;
+import com.community.domain.vo.OwnerParkingInfoVO;
+import com.community.domain.vo.ParkingSpaceDetailVO;
+import com.community.domain.vo.ParkingLotDetailVO;
 import com.community.service.ComplexBusinessService;
 import com.community.service.OwnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class ComplexBusinessServiceImpl implements ComplexBusinessService {
@@ -53,6 +58,9 @@ public class ComplexBusinessServiceImpl implements ComplexBusinessService {
     
     @Autowired
     private DepartmentDao departmentDao;
+    
+    @Autowired
+    private ParkingLotDao parkingLotDao;
     
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -184,5 +192,62 @@ public class ComplexBusinessServiceImpl implements ComplexBusinessService {
         ownerIssue.setAssignedStaffId(staffId);
         ownerIssue.setIssueStatus("处理中");
         return ownerIssueDao.updateById(ownerIssue) > 0;
+    }
+    
+    @Override
+    public OwnerParkingInfoVO getParkingInfoByOwnerId(Long ownerId) {
+        OwnerParkingInfoVO vo = new OwnerParkingInfoVO();
+        
+        // 获取业主信息
+        Owner owner = ownerDao.selectById(ownerId);
+        vo.setOwner(owner);
+        
+        // 获取车位信息
+        LambdaQueryWrapper<ParkingSpace> spaceWrapper = new LambdaQueryWrapper<>();
+        spaceWrapper.eq(ParkingSpace::getOwnerId, ownerId);
+        List<ParkingSpace> parkingSpaces = parkingSpaceDao.selectList(spaceWrapper);
+        vo.setParkingSpaces(parkingSpaces);
+        
+        // 获取车辆信息
+        LambdaQueryWrapper<Vehicle> vehicleWrapper = new LambdaQueryWrapper<>();
+        vehicleWrapper.eq(Vehicle::getOwnerId, ownerId);
+        List<Vehicle> vehicles = vehicleDao.selectList(vehicleWrapper);
+        vo.setVehicles(vehicles);
+        
+        return vo;
+    }
+    
+    @Override
+    public ParkingSpaceDetailVO getParkingSpaceDetailById(Long parkingSpaceId) {
+        ParkingSpaceDetailVO vo = new ParkingSpaceDetailVO();
+        
+        // 获取车位信息
+        ParkingSpace parkingSpace = parkingSpaceDao.selectById(parkingSpaceId);
+        vo.setParkingSpace(parkingSpace);
+        
+        // 获取停车场信息
+        if (parkingSpace != null && parkingSpace.getParkingLotId() != null) {
+            ParkingLot parkingLot = parkingLotDao.selectById(parkingSpace.getParkingLotId());
+            vo.setParkingLot(parkingLot);
+        }
+        
+        return vo;
+    }
+    
+    @Override
+    public ParkingLotDetailVO getParkingLotDetailById(Long parkingLotId) {
+        ParkingLotDetailVO vo = new ParkingLotDetailVO();
+        
+        // 获取停车场信息
+        ParkingLot parkingLot = parkingLotDao.selectById(parkingLotId);
+        vo.setParkingLot(parkingLot);
+        
+        // 获取社区信息
+        if (parkingLot != null && parkingLot.getCommunityId() != null) {
+            CommunityInfo communityInfo = communityInfoDao.selectById(parkingLot.getCommunityId());
+            vo.setCommunityInfo(communityInfo);
+        }
+        
+        return vo;
     }
 }

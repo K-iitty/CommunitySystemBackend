@@ -2,6 +2,9 @@ package com.community.web.controller;
 
 import com.community.common.Result;
 import com.community.domain.entity.*;
+import com.community.domain.vo.OwnerParkingInfoVO;
+import com.community.domain.vo.ParkingSpaceDetailVO;
+import com.community.domain.vo.ParkingLotDetailVO;
 import com.community.service.ComplexBusinessService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -242,5 +245,41 @@ public class ComplexBusinessController {
         } else {
             return Result.error("分配失败");
         }
+    }
+    
+    /**
+     * 根据业主ID查询车位和车辆信息
+     */
+    @GetMapping("/owner/{ownerId}/parkingInfo")
+    @Operation(summary = "根据业主ID查询车位和车辆信息", description = "根据业主ID查询车位和车辆信息")
+    @ApiOperationSupport(order = 14, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result getParkingInfoByOwnerId(@Parameter(description = "业主ID") @PathVariable Long ownerId) {
+        OwnerParkingInfoVO result = complexBusinessService.getParkingInfoByOwnerId(ownerId);
+        return Result.ok().put("data", result);
+    }
+    
+    /**
+     * 根据车位ID查询车位和停车场详细信息
+     */
+    @GetMapping("/parkingSpace/{parkingSpaceId}/detail")
+    @Operation(summary = "根据车位ID查询车位和停车场详细信息", description = "根据车位ID查询车位和停车场详细信息")
+    @ApiOperationSupport(order = 15, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result getParkingSpaceDetailById(@Parameter(description = "车位ID") @PathVariable Long parkingSpaceId) {
+        ParkingSpaceDetailVO result = complexBusinessService.getParkingSpaceDetailById(parkingSpaceId);
+        return Result.ok().put("data", result);
+    }
+    
+    /**
+     * 根据停车场ID查询停车场和社区详细信息
+     */
+    @GetMapping("/parkingLot/{parkingLotId}/detail")
+    @Operation(summary = "根据停车场ID查询停车场和社区详细信息", description = "根据停车场ID查询停车场和社区详细信息")
+    @ApiOperationSupport(order = 16, author = "开发团队")
+    @SecurityRequirement(name = "Authorization")
+    public Result getParkingLotDetailById(@Parameter(description = "停车场ID") @PathVariable Long parkingLotId) {
+        ParkingLotDetailVO result = complexBusinessService.getParkingLotDetailById(parkingLotId);
+        return Result.ok().put("data", result);
     }
 }
