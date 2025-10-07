@@ -31,6 +31,11 @@ public class AdminOperationLogServiceImpl extends ServiceImpl<AdminOperationLogD
             queryWrapper.eq(AdminOperationLog::getOperationType, adminOperationLog.getOperationType());
         }
         
+        // 根据操作描述模糊查询
+        if (StringUtils.isNotBlank(adminOperationLog.getOperationDescription())) {
+            queryWrapper.like(AdminOperationLog::getOperationDescription, adminOperationLog.getOperationDescription());
+        }
+        
         // 根据操作状态查询
         if (StringUtils.isNotBlank(adminOperationLog.getOperationStatus())) {
             queryWrapper.eq(AdminOperationLog::getOperationStatus, adminOperationLog.getOperationStatus());
