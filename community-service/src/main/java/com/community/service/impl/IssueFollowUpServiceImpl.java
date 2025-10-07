@@ -26,6 +26,11 @@ public class IssueFollowUpServiceImpl extends ServiceImpl<IssueFollowUpDao, Issu
             queryWrapper.eq(IssueFollowUp::getOperatorId, issueFollowUp.getOperatorId());
         }
         
+        // 根据操作人姓名模糊查询
+        if (StringUtils.isNotBlank(issueFollowUp.getOperatorName())) {
+            queryWrapper.like(IssueFollowUp::getOperatorName, issueFollowUp.getOperatorName());
+        }
+        
         // 根据跟进内容模糊查询
         if (StringUtils.isNotBlank(issueFollowUp.getFollowUpContent())) {
             queryWrapper.like(IssueFollowUp::getFollowUpContent, issueFollowUp.getFollowUpContent());
