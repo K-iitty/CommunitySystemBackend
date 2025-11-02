@@ -6,13 +6,16 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="community-dao" />
-        <module name="community-common" />
-        <module name="community-domain" />
-        <module name="community-service" />
-        <module name="community-web" />
+        <module name="community-system" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="community-common" target="17" />
+      <module name="community-dao" target="17" />
+      <module name="community-domain" target="17" />
+      <module name="community-service" target="17" />
+      <module name="community-web" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

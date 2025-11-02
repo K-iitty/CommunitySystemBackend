@@ -1,0 +1,100 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/community?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: sheep14
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      # 连接池名称
+      pool-name: HikariCP
+      # 最小空闲连接数
+      minimum-idle: 5
+      # 最大连接数
+      maximum-pool-size: 20
+      # 连接超时时间(毫秒)
+      connection-timeout: 30000
+      # 空闲超时时间(毫秒)
+      idle-timeout: 600000
+      # 连接最大存活时间(毫秒)
+      max-lifetime: 1800000
+      # 连接测试查询
+      connection-test-query: SELECT 1
+  
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: sheep14
+      database: 0
+      
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+    
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+      
+logging:
+  level:
+    com.community: debug
+    com.community.common.config.JwtAuthenticationFilter: debug
+    
+# SpringDoc OpenAPI 配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: community-system
+      paths-to-match: /**
+      packages-to-scan: com.community.web.controller
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+# Knife4j 配置
+knife4j:
+  enable: true
+  production: false
+  basic:
+    enable: false
+  setting:
+    language: zh_cn
+
+# JWT配置
+jwt:
+  secret: communitySystemSecretKeyForJWTTokenGenerationAndValidation
+  expiration: 86400000
+
+# 文件上传配置
+file:
+  upload-path: uploads/knowledge
+
+# 阿里云OSS配置
+# 注意：endpoint必须与Bucket所在地域匹配
+# Bucket: smart-community-system 位于 华北1（北京）地域
+aliyun:
+  oss:
+    endpoint: oss-cn-beijing.aliyuncs.com  # Bucket所在地域endpoint
+    bucket-name: smart-community-system
+
+# Druid监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: druid

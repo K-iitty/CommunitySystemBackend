@@ -1,7 +1,0 @@
-com\community\common\config\JwtAuthenticationFilter.class
-com\community\common\Result.class
-com\community\common\config\CustomUserDetailsService.class
-com\community\common\config\WebMvcConfig.class
-com\community\common\exception\BusinessException.class
-com\community\common\util\JwtUtil.class
-com\community\common\validator\ValidatorUtil.class
