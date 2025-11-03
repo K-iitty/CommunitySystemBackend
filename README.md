@@ -6,7 +6,20 @@
 
 **社区数字化管理平台**是一套完整的智慧社区解决方案，采用前后端分离的微服务架构设计。该平台为社区管理部门和业主提供了涵盖住户管理、房屋管理、车辆管理、停车管理、门禁管理、表计管理等核心功能的现代化数字管理与服务平台。
 
-该项目由四个主要模块组成，分别针对**管理员（后端和前端）**和**业主/物业（后端和前端）**三个角色的业务需求。
+<<<<<<< HEAD
+该项目由四个主要模块组成，分别针对 **管理员（后端和前端）**和**业主/物业（后端和前端）**三个角色的业务需求。
+
+---
+
+## 项目指路
+
+管理员前端-web网页（vue3+elementplus）：https://github.com/K-iitty/CommunitySystemFrontend
+
+管理员后端（springboot3）：https://github.com/K-iitty/CommunitySystemBackend
+
+业主/物业前端-微信小程序（微信小程序原生）：https://github.com/K-iitty/CommunityClientFrontend
+
+业主/物业后端（springboot3）：https://github.com/K-iitty/CommunityClientBackend
 
 ---
 
